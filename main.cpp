@@ -24,6 +24,7 @@ public:
 
     Value operator+(float other) {
         Value sol(this->value->data + other);
+        sol.value->prev.push_back(this->value);
         return sol;
     }
 
@@ -36,14 +37,20 @@ public:
 
     Value operator*(float other) {
         Value sol(this->value->data * other);
+        sol.value->prev.push_back(this->value);
         return sol;
     }
     
     void print_prev() const {
     for (const auto& element : value->prev) {
-        std::cout << element->data << '\n';
+        //std::cout << element->data << '\n';
+        printf("%f \n", element->data);
+        }
     }
-}
+
+    float data() const {
+        return value->data;
+    }
 };
 
 int main() {
@@ -51,11 +58,12 @@ int main() {
     Value a(3.0);
     Value b(2.0);
     Value c(10.0);
-    Value d(a * b);
-    Value d1(d + c);
+    Value d = a * b;
+    Value d1 = d + c;
     a = a + h; 
-    Value d2(d + c);
+    d = a * b;
+    Value d2 = d + c;
     d.print_prev();
-    d1.print_prev();
     d2.print_prev();
+    std::cout<< "slope: " << (d2.data() - d1.data())/h << "\n";
 }
