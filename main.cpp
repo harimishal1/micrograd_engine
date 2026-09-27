@@ -4,27 +4,36 @@
 
 class Value {
 private:
-    struct meta_data {
-        float data;
-        std::vector <std::shared_ptr<meta_data>> prev;
-        meta_data (float data) : data(data) {}
+    enum _op{
+        NONE,
+        ADD,
+        MUL,
     };
-    std::shared_ptr<meta_data> value;
+    
+    struct _meta {
+        _op operation;
+        float data;
+        std::vector <std::shared_ptr<_meta>> prev;
+        _meta (float data) : operation(NONE), data(data) {}
+    };
+    std::shared_ptr<_meta> value;
 
 public:
     Value(float data)
-        : value(std::make_shared<meta_data>(data)) {}
+        : value(std::make_shared<_meta>(data)) {}
         
     Value operator+(const Value& other) {
         Value sol(this->value->data + other.value->data);
         sol.value->prev.push_back(this->value);
         sol.value->prev.push_back(other.value);
+        sol.value->operation = ADD;
         return sol;
     }
 
     Value operator+(float other) {
         Value sol(this->value->data + other);
         sol.value->prev.push_back(this->value);
+        sol.value->operation = ADD;
         return sol;
     }
 
@@ -32,12 +41,14 @@ public:
         Value sol(this->value->data * other.value->data);
         sol.value->prev.push_back(this->value);
         sol.value->prev.push_back(other.value);
+        sol.value->operation = MUL;
         return sol;
     }
 
     Value operator*(float other) {
         Value sol(this->value->data * other);
         sol.value->prev.push_back(this->value);
+        sol.value->operation = MUL;
         return sol;
     }
     
